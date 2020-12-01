@@ -35,6 +35,10 @@ In your expense report, what is the product of the three entries that sum to 202
 
 Your puzzle answer was 218767230.
 """
+
+import itertools
+import math
+
 from time import time
 
 testdata = """
@@ -47,30 +51,22 @@ testdata = """
 """
 
 TARGET = 2020
-A = 0
-B = 0
-C = 0
 
 #data = list(map(lambda x: int(x), testdata.strip().split("\n")))
 data = list(map(lambda x: int(x), open("data/01.data").read().strip().split("\n")))
 
 def part1(data: [int]) -> int:
-    while True:
+    while data:
         A = data.pop(0)
+        for B in data:
+            if A + B == TARGET:
+                return A * B
 
-        for number in data:
-            if A + number == TARGET:
-                return A * number
-
-def part2(data: [int]):
-    while True:
+def part2(data: [int]) -> int:
+    while data:
         A = data.pop(0)
-        for numberB in data:
-            B = numberB
-
-            for numberC in data:
-                C = numberC
-
+        for index, B in enumerate(data):
+            for C in data[index+1:]:
                 if A + B + C == TARGET:
                     return A * B * C
 
