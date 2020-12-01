@@ -35,6 +35,7 @@ In your expense report, what is the product of the three entries that sum to 202
 
 Your puzzle answer was 218767230.
 """
+from time import time
 
 testdata = """
 979
@@ -53,44 +54,31 @@ C = 0
 #data = list(map(lambda x: int(x), testdata.strip().split("\n")))
 data = list(map(lambda x: int(x), open("data/01.data").read().strip().split("\n")))
 
-def part1():
-    indexA = 0
-    found = False
+def part1(data: [int]) -> int:
+    while True:
+        A = data.pop(0)
 
-    while not found:
-        A = data[indexA]
         for number in data:
-            B = number
+            if A + number == TARGET:
+                return A * number
 
-            if A + B == TARGET:
-                found = True
-                print("FOUND", A, B, ">", A*B)
-                break
-
-        indexA += 1
-
-def part2():
-    indexA = 0
-    found = False
-
-    while not found:
-        A = data[indexA]
-        for numberB in data[indexA:]:
+def part2(data: [int]):
+    while True:
+        A = data.pop(0)
+        for numberB in data:
             B = numberB
 
-            for numberC in data[indexA+1:]:
+            for numberC in data:
                 C = numberC
 
                 if A + B + C == TARGET:
-                    found = True
-                    print("FOUND", A, B, C, ">", A * B * C)
-                    break
+                    return A * B * C
 
-            if found:
-                break
+t1 = time()
+result1 = part1(data[:])
+t2 = time()
+result2 = part2(data[:])
+t3 = time()
 
-
-        indexA += 1
-
-part1()
-part2()
+print(result1, "in", (t2-t1) * 1000)
+print(result2, "in", (t3-t2) * 1000)
