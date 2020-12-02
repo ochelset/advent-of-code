@@ -36,9 +36,6 @@ In your expense report, what is the product of the three entries that sum to 202
 Your puzzle answer was 218767230.
 """
 
-import itertools
-import math
-
 from time import time
 
 testdata = """
