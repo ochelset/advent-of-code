@@ -210,49 +210,48 @@ class PassportScanner():
         return True
 
     def qualityScan(self, passport: Passport) -> bool:
+        valid = True
         for key in self.required:
             value = passport.get(key)
             if value == None:
                 return False
 
-            valid = True
-
             if key == "byr":
-                valid = self.isWithingRange(int(value), 1920, 2002)
+                valid = self.isWithinRange(int(value), 1920, 2002)
 
-            if key == "iyr":
-                valid = self.isWithingRange(int(value), 2010, 2020)
+            elif key == "iyr":
+                valid = self.isWithinRange(int(value), 2010, 2020)
 
-            if key == "eyr":
-                valid = self.isWithingRange(int(value), 2020, 2030)
+            elif key == "eyr":
+                valid = self.isWithinRange(int(value), 2020, 2030)
 
-            if key == "hgt":
+            elif key == "hgt":
                 valid = self.hgt(value)
 
-            if key == "hcl":
+            elif key == "hcl":
                 valid = self.hcl(value)
 
-            if key == "ecl":
+            elif key == "ecl":
                 valid = self.ecl(value)
 
-            if key == "pid":
+            elif key == "pid":
                 valid = self.pid(value)
 
             if not valid:
-                return False
+                break
 
-        return True
+        return valid
 
-    def isWithingRange(self, value: int, low: int, high: int) -> bool:
+    def isWithinRange(self, value: int, low: int, high: int) -> bool:
         return value >= low and value <= high
 
     def hgt(self, height: str) -> bool:
         if height.endswith("cm"):
-            h = int(height.replace("cm", ""))
-            return self.isWithingRange(h, 150, 193)
+            h = int(height[:-2])
+            return self.isWithinRange(h, 150, 193)
         if height.endswith("in"):
-            h = int(height.replace("in", ""))
-            return self.isWithingRange(h, 59, 76)
+            h = int(height[:-2])
+            return self.isWithinRange(h, 59, 76)
 
         return False
 
@@ -289,13 +288,13 @@ passports = extractPassports()
 #
 
 t1 = time()
-r1 = r2 = 0
+result1 = result2 = 0
 for passport in passports:
-    r1 += 1 if scanner.scan(passport) else 0
-    r2 += 1 if scanner.qualityScan(passport) else 0
+    result1 += 1 if scanner.scan(passport) else 0
+    result2 += 1 if scanner.qualityScan(passport) else 0
 t2 = time()
 
-print(r1)
-print(r2)
+print(result1)
+print(result2)
 print()
 print((t2-t1) * 1000, "ms.")
