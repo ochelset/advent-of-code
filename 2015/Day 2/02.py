@@ -32,7 +32,7 @@ Your puzzle answer was 3737498.
 
 import math
 
-presents = open("data/02.data").read().strip().split("\n")
+presents = open("02.data").read().strip().split("\n")
 testdata = """
 3x4x2
 2x3x4

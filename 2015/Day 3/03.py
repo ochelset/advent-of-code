@@ -39,7 +39,7 @@ testdata = """
 ^v^v^v^v^v
 """
 
-moves = open("data/03.data").read().strip();
+moves = open("03.data").read().strip();
 
 log = {(0, 0): 1}
 

@@ -63,7 +63,7 @@ def elevatorTo(commands: str, destination: int or None) -> (int, int):
 #for data in testdata.strip().split("\n"):
 #    print(data, ">", elevatorTo(data))
 
-commands = open("data/01.data").read().strip()
+commands = open("01.data").read().strip()
 result1 = elevatorTo(commands, None)
 result2 = elevatorTo(commands, BASEMENT)
 
