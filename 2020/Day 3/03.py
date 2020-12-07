@@ -86,7 +86,7 @@ testdata = """
 .#..#...#.#
 """
 
-data = open("data/03.data").read()
+data = open("03.data").read()
 #data = testdata.strip()
 
 treemap = data.split("\n")

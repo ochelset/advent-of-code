@@ -65,7 +65,7 @@ def isOfficialTobogganValid(password: str) -> bool:
     return composed.count(letter) == 1
 
 #data = testdata.strip().split("\n")
-data = open("data/02.data").read().strip().split("\n")
+data = open("02.data").read().strip().split("\n")
 
 def part1() -> int:
     return len(list(filter(lambda x: isValid(x), data)))

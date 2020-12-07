@@ -50,7 +50,7 @@ testdata = """
 TARGET = 2020
 
 #data = list(map(lambda x: int(x), testdata.strip().split("\n")))
-data = list(map(lambda x: int(x), open("data/01.data").read().strip().split("\n")))
+data = list(map(lambda x: int(x), open("01.data").read().strip().split("\n")))
 
 def part1(data: [int]) -> int:
     while data:

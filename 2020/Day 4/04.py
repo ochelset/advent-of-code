@@ -119,7 +119,7 @@ Count the number of valid passports - those that have all required fields and va
 
 from time import time
 
-data = open("data/04.data").read().split("\n")
+data = open("04.data").read().split("\n")
 data1 = """ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
 
