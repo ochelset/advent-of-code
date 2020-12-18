@@ -56,13 +56,10 @@ class Calculator():
         self.ac()
         self.equation = equation
         group = []
-        if advanced:
-            self.result = self.advanced_execute(group)
-        else:
-            self.result = self.execute(group)
+        self.result = self.execute(group, advanced=advanced)
         return self.result
 
-    def execute(self, group: list) -> int:
+    def execute(self, group: list, advanced: bool = False) -> int:
         result = 0
         while self.index < len(self.equation):
             char = self.equation[self.index]
@@ -83,63 +80,7 @@ class Calculator():
             if char == "(":
                 new_group = []
                 group.append(new_group)
-                result = self.execute(new_group)
-
-            if char == ")":
-                if self.number:
-                    self.accumulate(group)
-                return result
-
-        if self.number:
-            self.accumulate(group)
-
-        self.operator = "+"
-        output = []
-        while group:
-            part = group.pop(0)
-            if self.has_child(part):
-                part = self.calculate_parenthesis(part)
-                output.append(part)
-
-            if part in ("+", "*"):
-                self.operator = part
-                output.append(part)
-                continue
-
-            elif type(part) == type([]):
-                part = self.process_parenthesis(part)
-            else:
-                output.append(part)
-
-            if self.operator == "*":
-                result *= part
-            else:
-                result += part
-
-        return result
-
-    def advanced_execute(self, group: list) -> int:
-        result = 0
-        while self.index < len(self.equation):
-            char = self.equation[self.index]
-            self.index += 1
-
-            if char.isdigit():
-                self.number.append(char)
-
-            if char == " ":
-                if not self.number:
-                    continue
-
-                self.accumulate(group)
-
-            if char in ("+", "*"):
-                group.append(char)
-
-            if char == "(":
-                new_group = []
-                group.append(new_group)
-                result = self.advanced_execute(new_group)
+                result = self.execute(new_group, advanced=advanced)
 
             if char == ")":
                 if self.number:
@@ -154,7 +95,7 @@ class Calculator():
         while group:
             part = group.pop(0)
             while self.has_child(part):
-                part = self.calculate_parenthesis(part, advanced=True)
+                part = self.calculate_parenthesis(part, advanced=advanced)
 
             if part in ("+", "*"):
                 self.operator = part
@@ -162,11 +103,22 @@ class Calculator():
                 continue
 
             elif type(part) == type([]):
-                output.append(self.calc_sums(part))
+                if advanced:
+                    output.append(self.calc_sums(part))
+                else:
+                    part = self.process_parenthesis(part)
             else:
                 output.append(part)
 
-        return self.calc_sums(output)
+            if not advanced:
+                if self.operator == "*":
+                    result *= part
+                else:
+                    result += part
+
+        if advanced:
+            return self.calc_sums(output)
+        return result
 
     def has_child(self, part) -> bool:
         if part in ("+", "*"):
