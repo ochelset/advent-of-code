@@ -22,7 +22,7 @@ class Combat():
     players: list
     rounds: int
     recursive: bool
-    deck_history: list
+    deck_history: dict
 
     def __init__(self):
         global game
@@ -30,7 +30,7 @@ class Combat():
         self.players = []
         self.rounds = 1
         self.recursive = False
-        self.deck_history = []
+        self.deck_history = {}
         game += 1
 
     @property
@@ -56,12 +56,15 @@ class Combat():
             #print("-- Round %s (Game %s) --" % (self.rounds, self.game))
 
             if self.recursive:
-                decks = (self.players[0].deck, self.players[1].deck)
-                if decks in self.deck_history:
+                history = self.players[0].deck[:]
+                history.append("|")
+                history.extend(self.players[1].deck[:])
+                history = tuple(history)
+                if history in self.deck_history:
                     self.players[1].deck = []
                     break
 
-                self.deck_history.append((self.players[0].deck[:], self.players[1].deck[:]))
+                self.deck_history[history] = True
 
             #print("Player", self.players[0].name + "'s deck:", self.players[0].name, self.players[0].deck)
             #print("Player", self.players[1].name + "'s deck:", self.players[1].name, self.players[1].deck)
