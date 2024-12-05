@@ -1,0 +1,17 @@
+import itertools
+
+data = open("input.data").read().strip().split("\n")
+
+test_data = """
+???.### 1,1,3
+.??..??...?##. 1,1,3
+?#?#?#?#?#?#?#? 1,3,1,6
+????.#...#... 4,1,1
+????.######..#####. 1,6,5
+?###???????? 3,2,1
+""".strip().split("\n")
+
+data = test_data
+
+print(data)
+print(list(set(itertools.permutations('..#', 3))))

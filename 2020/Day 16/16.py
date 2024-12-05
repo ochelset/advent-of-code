@@ -58,9 +58,9 @@ def is_ticket_valid(ticket: list, groups: list) -> list:
 def in_group(number: int, group: list) -> int:
     result = 0
     if number >= group[0][0] and number <= group[0][1]:
-        result += 1
+        result = 1
     if number >= group[1][0] and number <= group[1][1]:
-       result += 1
+       result = 1
 
     return result
 
@@ -81,19 +81,31 @@ def find_group_for(column: int, numbers: list, groups: list):
         for ruleset_index, ruleset in enumerate(groups):
             possibles[0][ruleset_index] = ruleset[0][2]
 
+    print()
+    print("--------------------")
+    print("RANG", groups)
+    print("NUMS", numbers)
+
     for row, number in enumerate(numbers):
+        print("ROW", row, number)
+        input()
         for col, group in enumerate(groups):
+            print("X:", col, number, group, in_group(number, group))
             possibles[1][col] += in_group(number, group)
 
-    print("--------------------")
+    print("POSS", possibles)
     for i, row in enumerate(possibles):
-        print(row)
+        print(">", row)
     print()
 
-    group_id = (0, 0)
+    group_id = (0, 0, 0, 0)
     for i, col in enumerate(possibles[1]):
         if col > group_id[0]:
-            group_id = (col, i, possibles[0][i])
+            group_id = (col, i, column, possibles[0][i])
+
+    print("?", possibles)
+    print("=", group_id)
+    input()
 
     return group_id
 
@@ -104,7 +116,6 @@ def part1(data: list):
     for rule in rules:
         identificator, rule = rule.split(": ", 1)
         rule_ranges = rule.split(" or ")
-        #ranges[identificator] = []
         range_group = []
         for range in rule_ranges:
             low, high = range.split("-")
@@ -116,8 +127,7 @@ def part1(data: list):
         ticket = [int(n) for n in ticket_data.split(",")]
         errors = is_ticket_valid(ticket, ranges)
         error_rate.extend(errors)
-        #print(ticket, errors)
-        #input()
+
     print("Part 1:", sum(error_rate))
 
 def part2(data: list):
@@ -143,58 +153,62 @@ def part2(data: list):
 
     #
     memory = set()
-    print(valid_tickets)
+    print("VALID", valid_tickets)
+    print("RANGES", ranges)
 
-    for ticket in valid_tickets:
-        for i, number in enumerate(ticket):
-            print(">", i, number)
-
-
-    print(memory)
-
-part1(data)
-part2(testdata2)
-
-"""
-> 0 class 151
-> 1 departure date 139          departure date 5 107 *
-> 2 departure time 53           departure time 7 109 *
-> 9 seat 131
-> 3 arrival platform 71
-> 4 wagon 191
-> 5 type 107
-> 6 departure location 61       departure location 0 151 *
-> 7 arrival station 109
-> 8 route 157
-> 10 train 67
-> 11 row 73
-> 12 departure track 59         departure track 4 191 *
-> 13 price 79
-> 14 departure platform 113     departure platform 2 53 *
-> 16 departure station 137      departure station 1 139 *
-> 15 arrival location 167       
-> 17 zone 163                   
-> 18 arrival track 149          
-> 19 duration 127
+    #for ticket in valid_tickets:
+    #    for i, number in enumerate(ticket):
+    #        print(">", i, number)
 
     order = []
-    for i in range(len(my_ticket)):
-        column = list(map(lambda x: x[i], valid_tickets))
-        group = find_group_for(i, column, ranges)
-        print("<---", i, group)
-        order.append(ranges.pop(group[1])[0][2])
-        print("====", group[2], ranges)
+    #for i in range(len(my_ticket)):
+    #    column = list(map(lambda x: x[i], valid_tickets))
+    #    group = find_group_for(i, column, ranges)
+    #    print("<---", i, group, column)
+    #    order.append(ranges.pop(group[1])[0][2])
+    #    #print("====", group[2], ranges)
+
+    possibles = {}
+    identificators = set([x[0][2] for x in ranges])
+
+    while True:
+        for group in ranges:
+            low = set(range(group[0][0], group[0][1]+1))
+            low.update(range(group[1][0], group[1][1]+1))
+            possibles[group[0][2]] = set(range(len(my_ticket)))
+            #high = set(range(group[1][0], group[1][1]+1))
+            print("Group", group[0][2], low)
+            for i in range(len(my_ticket)):
+                column = list(map(lambda x: x[i], valid_tickets))
+                print(i, column, set(column).difference(low))
+                if set(column).difference(low):
+                    possibles[group[0][2]].discard(i)
+                    print("Column", i, "can't be", group[0][2])
+
+            #print("T", ticket)
+                #for col, number in enumerate(ticket):
+                #    if number not in low:
+                #        possibles[col].discard(group[0][2])
+                #        print("Column", col, "can't be", group[0][2])
+                #    #print(col, number, number in low)
+        print("P", possibles)
+        input()
 
     print(order)
-    print("My ticket", my_ticket)
-
+    print(my_ticket)
     result = 1
-    for i, field in enumerate(order):
-        print(field, i, my_ticket[i], "*" if field.startswith("departure") else "")
-        if not field.startswith("departure"):
-            continue
-
-        result *= my_ticket[i]
+    for index, key in enumerate(order):
+        if key.startswith("departure"):
+            print(index, key, my_ticket[index])
+            result *= my_ticket[index]
 
     print("Part 2:", result)
+
+part1(data)
+print("***\n")
+part2(testdata2)
+#part2(data)
+
+"""
+2478056818961 is wrong (too high!!!)
 """

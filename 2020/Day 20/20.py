@@ -249,6 +249,18 @@ def analyze(tiles: list) -> dict:
 
     return images
 
+def find_corners(images: dict) -> list:
+    shortest = 100
+    corners = []
+    for id in images.keys():
+        connections_length = len(images[id].connections)
+        if connections_length < shortest:
+            shortest = len(images[id].connections)
+            corners = []
+        if connections_length == shortest:
+            corners.append(id)
+    return corners
+
 def organize_tiles(images: dict, corners: list):
     print("ORGANIZE", corners)
 
@@ -286,17 +298,7 @@ def part1(data: str):
             if edges.intersection(image.edges):
                 examine.connect(image)
 
-    corners = []
-    shortest = 100
-    for id in images.keys():
-        connections_length = len(images[id].connections)
-        if connections_length < shortest:
-            shortest = len(images[id].connections)
-            corners = []
-        if connections_length == shortest:
-            corners.append(id)
-
-        #print("**", id, images[id].connections)
+    corners = find_corners(images)
 
     result = 1
     for corner in corners:

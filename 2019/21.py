@@ -85,4 +85,4 @@ ANSWER:
 
 from IntCodeProcessor import IntCodeProcessor
 
-data = open("data/21.data").read()
+data = open("data/21.data").read().split(",")

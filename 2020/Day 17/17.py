@@ -13,39 +13,30 @@ testdata = """
 ..#
 ###""".strip().split("\n")
 
-ROUNDS = 6
+BOOT_SEQUENCE_LENGTH = 6
 ACTIVE = True
 INACTIVE = False
 
-CUBE = [
-    (-1, 1, 1), (0, 1, 1), (1, 1, 1),
-    (-1, 0, 1), (0, 0, 1), (1, 0, 1),
-    (-1, -1, 1), (0, -1, 1), (1, -1, 1),
-
-    (-1, 1, 0), (0, 1, 0), (1, 1, 0),
-    (-1, 0, 0), (1, 0, 0),
-    (-1, -1, 0), (0, -1, 0), (1, -1, 0),
-
-    (-1, 1, -1), (0, 1, -1), (1, 1, -1),
-    (-1, 0, -1), (0, 0, -1), (1, 0, -1),
-    (-1, -1, -1), (0, -1, -1), (1, -1, -1)
-]
-
 space = {}
+cyclus = 1
 
 def init(state: list):
     global space
-    space = {}
+    space = { "min": 0, "max": len(state)}
 
     for y, line in enumerate(state):
         for x, state in enumerate(line):
+            #print("X;Y;Z", x,y,0, ACTIVE if state == "#" else INACTIVE)
             space[(x, y, 0)] = ACTIVE if state == "#" else INACTIVE
 
 def render(z: int):
-    xMin = 0
-    yMin = 0
-    xMax = 3
-    yMax = 3
+    global space
+    xMin = space["min"]
+    yMin = space["min"]
+    xMax = space["max"]
+    yMax = space["max"]
+
+    print("z:", z, yMin, yMax)
     for y in range(yMin, yMax):
         line = []
         for x in range(xMin, xMax):
@@ -55,58 +46,84 @@ def render(z: int):
 
     print()
 
-def count_active_neighbors(coordinate: tuple, space: dict) -> int:
+def count_active_neighbors(coordinate: tuple, space: dict, cube: list) -> int:
     active = 0
-    for neighbor in CUBE:
-        neighbor_coordinate = (coordinate[0] + neighbor[0], coordinate[1] + neighbor[1], coordinate[2] + neighbor[2])
-        #print(neighbor_coordinate, space.get(neighbor_coordinate))
-        active += 1 if space.get(neighbor_coordinate) else 0
+    for neighbor in cube:
+        neighbor_coordinate = []
+        for i in range(len(coordinate)):
+            neighbor_coordinate.append(coordinate[i] + neighbor[i])
+
+        active += 1 if space.get(tuple(neighbor_coordinate)) else 0
 
     return active
 
-def cycle():
+def cycle(cube: list):
     global space
-    print("> cycle start")
+    global cyclus
+    print("> cycle", cyclus)
 
+    cyclus += 1
+    space["min"] -= 2
+    space["max"] += 2
     shadow_space = space.copy()
 
-    for z in range(-2, 2):
-        for y in range (-2, 2):
-            for x in range(-2, 2):
-                coordinate = (x, y, z)
+    for w in range(space["min"]-1, space["max"]+1):
+        for z in range(space["min"]-1, space["max"]+1):
+            for y in range (space["min"]-1, space["max"]+1):
+                for x in range(space["min"]-1, space["max"]+1):
+                    coordinate = (x, y, z, w)
 
+                    active_neighbors = count_active_neighbors(coordinate, space, cube)
+                    #input()
 
-                #for coordinate in space.keys():
-                active_neighbors = count_active_neighbors(coordinate, shadow_space)
+                    current_state = shadow_space.get(coordinate) or INACTIVE
+                    new_state = current_state
+                    if current_state == ACTIVE:
+                        if active_neighbors in (2, 3):
+                            new_state = ACTIVE
+                        else:
+                            new_state = INACTIVE
+                    elif current_state == INACTIVE and active_neighbors == 3:
+                            new_state = ACTIVE
 
-                current_state = shadow_space.get(coordinate) or INACTIVE
-                new_state = current_state
-                if current_state == ACTIVE:
-                    if active_neighbors in (2, 3):
-                        new_state = ACTIVE
-                    else:
-                        new_state = INACTIVE
-                elif current_state == INACTIVE:
-                    if active_neighbors == 3:
-                        new_state = ACTIVE
-
-                shadow_space[coordinate] = new_state
-                print(coordinate, current_state, ">", new_state, active_neighbors)
-
-        input()
+                    shadow_space[coordinate] = new_state
 
     space = shadow_space.copy()
 
+    result = 0
+    for coordinate in space.keys():
+        if coordinate in ["min", "max"]:
+            continue
+        result += 1 if space[coordinate] else 0
+
+    print("Active", result)
+
+def generate_cube(sides: int):
+    cube = []
+    for w in range(-1, 2):
+        for z in range(-1, 2):
+            for y in range(-1, 2):
+                for x in range(-1, 2):
+                    if x == 0 and y == 0 and z == 0 and w == 0:
+                        continue
+
+                    cube.append((x, y, z, w))
+
+    return cube
+
 def part1(data: list):
     init(data)
-    render(0)
-    cycle()
-    render(-1)
-    render(0)
-    render(1)
+
+    cube = generate_cube(sides=4)
+
+    # boot sequence
+    for _ in range(BOOT_SEQUENCE_LENGTH):
+        cycle(cube)
 
     result = 0
     for coordinate in space.keys():
+        if coordinate in ["min", "max"]:
+            continue
         result += 1 if space[coordinate] else 0
 
     print("Part 1:", result)

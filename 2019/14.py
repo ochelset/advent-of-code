@@ -258,7 +258,7 @@ class Chemical:
 
 data = open("data/14.data").read()
 
-datax = """
+data = """
 157 ORE => 5 NZVS
 165 ORE => 6 DCFZ
 44 XJWVT, 5 KHKGT, 1 QDVJ, 29 NZVS, 9 GPVTF, 48 HKGWZ => 1 FUEL
@@ -305,6 +305,10 @@ The 2210736 ORE-per-FUEL example could produce 460664 FUEL.
 Given 1 trillion ORE, what is the maximum amount of FUEL you can produce?
 """
 
+print("Part 1:", factory.best, "remaining:", factory.ores)
+factory.run()
+print("Part 1:", factory.best, "remaining:", factory.ores)
+factory.run()
 print("Part 1:", factory.best, "remaining:", factory.ores)
 
 delta = 0
